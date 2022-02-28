@@ -4,12 +4,13 @@ import com.github.kil0bait.pinterest_private_api_v3.responses.PIResponse;
 import com.github.kil0bait.pinterest_private_api_v3.utils.PIUtils;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class PIResponseException extends IOException {
-    private PIResponse response;
+    private final PIResponse response;
 
     public PIResponseException(PIResponse response) {
-        super(response.getMessage());
+        super(response.getMessage()+" : "+ Optional.of(response.getMessage_detailed()).orElse(""));
         this.response = response;
     }
 

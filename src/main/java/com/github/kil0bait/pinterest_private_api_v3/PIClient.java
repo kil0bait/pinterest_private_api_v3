@@ -28,10 +28,12 @@ public class PIClient implements Serializable {
 
     private final String username;
     private transient final String password;
-    private transient OkHttpClient httpClient;
     private boolean loggedIn = false;
     private String authToken;
-    private PIDevice device = PIAndroidDevice.DEVICES[0];
+    private PIDevice device = PIDevice.DEVICES[0];
+
+    private transient OkHttpClient httpClient;
+    private transient PIClientActions actions = new PIClientActions(this);
 
     public PIClient(String username, String password) {
         this(username, password, PIUtils.defaultHttpClientBuilder().build());
@@ -46,7 +48,7 @@ public class PIClient implements Serializable {
     public CompletableFuture<LoginResponse> sendLoginRequest() {
         return new LoginRequest(username, password).execute(this)
                 .thenApply((res) -> {
-                    log.info("Successfully log in {}",username);
+                    log.info("Successfully log in {}", username);
                     this.setLoggedInState(res);
                     this.authToken = res.getData().getToken_type() + " " + res.getData().getAccess_token();
                     return res;
@@ -123,6 +125,8 @@ public class PIClient implements Serializable {
                 .cookieJar(jar)
                 .build();
 
+        client.actions = new PIClientActions(client);
+
         return client;
     }
 
@@ -134,17 +138,43 @@ public class PIClient implements Serializable {
     @Serial
     private Object readResolve() throws ObjectStreamException {
         if (loggedIn)
-            log.info("Logged into {}", username);
+            log.info("Successfully deserialized {}", username);
         return this;
+    }
+
+    public OkHttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public PIDevice getDevice() {
+        return device;
+    }
+
+    public PIClient setDevice(PIDevice device) {
+        this.device = device;
+        return this;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public PIClientActions actions() {
+        return actions;
     }
 
     public static class Builder {
         private String username;
         private String password;
         private OkHttpClient client;
-        private PIDevice device = PIAndroidDevice.DEVICES[0];
+        private PIDevice device = PIDevice.DEVICES[0];
 
-        private BiConsumer<PIClient, LoginResponse> onLogin = (client, login) -> {};
+        private BiConsumer<PIClient, LoginResponse> onLogin = (client, login) -> {
+        };
 
         public PIClient build() {
             return new PIClient(username, password, Optional.ofNullable(client)
@@ -183,38 +213,5 @@ public class PIClient implements Serializable {
             this.client = client;
             return this;
         }
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public OkHttpClient getHttpClient() {
-        return httpClient;
-    }
-
-    public boolean isLoggedIn() {
-        return loggedIn;
-    }
-
-    public void setLoggedIn(boolean loggedIn) {
-        this.loggedIn = loggedIn;
-    }
-
-    public PIDevice getDevice() {
-        return device;
-    }
-
-    public PIClient setDevice(PIDevice device) {
-        this.device = device;
-        return this;
-    }
-
-    public String getAuthToken() {
-        return authToken;
     }
 }

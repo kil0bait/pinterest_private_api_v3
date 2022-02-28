@@ -1,6 +1,7 @@
 package com.github.kil0bait.pinterest_private_api_v3.requests.login;
 
 import com.github.kil0bait.pinterest_private_api_v3.PIClient;
+import com.github.kil0bait.pinterest_private_api_v3.PIConstants;
 import com.github.kil0bait.pinterest_private_api_v3.models.PIBaseModel;
 import com.github.kil0bait.pinterest_private_api_v3.requests.PIPostRequest;
 import com.github.kil0bait.pinterest_private_api_v3.responses.LoginResponse;
@@ -24,6 +25,13 @@ public class LoginRequest extends PIPostRequest<LoginResponse> {
     @Override
     public String path() {
         return "login/";
+    }
+
+    @Override
+    public String getQueryString(PIClient client) {
+        return mapQueryString("client_id", PIConstants.CLIENT_ID,
+                "timestamp", PIConstants.TIMESTAMP,
+                "oauth_signature", PIConstants.OAUTH_SIGNATURE);
     }
 
     @Override

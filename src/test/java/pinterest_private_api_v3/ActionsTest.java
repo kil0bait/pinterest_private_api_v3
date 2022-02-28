@@ -1,9 +1,9 @@
 package pinterest_private_api_v3;
 
 import com.github.kil0bait.pinterest_private_api_v3.PIClient;
-import com.github.kil0bait.pinterest_private_api_v3.models.pin.PinImage;
-import com.github.kil0bait.pinterest_private_api_v3.requests.feeds.FeedsRequest;
-import com.github.kil0bait.pinterest_private_api_v3.responses.feeds.FeedsResponse;
+import com.github.kil0bait.pinterest_private_api_v3.models.users.Board;
+import com.github.kil0bait.pinterest_private_api_v3.models.users.User;
+import com.github.kil0bait.pinterest_private_api_v3.requests.boards.BoardPinsRequest;
 import com.github.kil0bait.pinterest_private_api_v3.utils.PIUtils;
 import okhttp3.OkHttpClient;
 import org.junit.AfterClass;
@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class ActionsTest {
     private static final String PATH = "temp/";
@@ -42,10 +43,65 @@ public class ActionsTest {
     }
 
     @Test
-    public void feedPinsTest() {
-        FeedsResponse response = new FeedsRequest().execute(client).join();
-        for (PinImage i : response.getData())
-            log.info(i.getImage_large_url() + "\r\n" + i.getImage_medium_url());
-        Assert.assertTrue(response.getData().size() > 0);
+    public void followingTest() {
+        List<User> users = client.actions().meFollowing().join().getUsers();
+        for (User user : users)
+            log.info("{} {}", user.getId(), user.getUsername());
+    }
+
+    @Test
+    public void boardsTest() {
+        client.actions().meFollowing().join().getUsers()
+                .forEach(user -> client.actions().userBoards(user.getId()).join().getBoards()
+                        .forEach(board -> log.info("{} {} {}", board.getId(), board.getName(), board.getUrl())));
+    }
+
+    @Test
+    public void boardPinsTest() {
+        User user = client.actions().meFollowing().join().getUsers().stream().findFirst().orElseThrow();
+        Board motiv = client.actions().userBoards(user.getId()).join().getBoards().stream()
+                .filter(board -> board.getName().equals("motiv"))
+                .findFirst().orElseThrow();
+        client.actions().boardPins(motiv.getId()).join().getPins().stream()
+                .filter(boardPin -> boardPin.getType().equals("pin"))
+                .forEach(boardPin -> log.info("{} [{}:{}] {}", boardPin.getId(),
+                        boardPin.getImage_large_size_pixels().getWidth(),
+                        boardPin.getImage_large_size_pixels().getHeight(),
+                        boardPin.getImage_large_url()));
+    }
+
+    @Test
+    public void boardFeedPinsTest() {
+        User user = client.actions().meFollowing().join().getUsers().stream().findFirst().orElseThrow();
+        Board motiv = client.actions().userBoards(user.getId()).join().getBoards().stream()
+                .filter(board -> board.getName().equals("motiv"))
+                .findFirst().orElseThrow();
+        client.actions().boardIdeasFeedPins(motiv.getId()).join().getPins().stream()
+                .filter(boardPin -> boardPin.getType().equals("pin"))
+                .forEach(boardPin -> log.info("{} [{}:{}] {}", boardPin.getId(),
+                        boardPin.getImage_large_size_pixels().getWidth(),
+                        boardPin.getImage_large_size_pixels().getHeight(),
+                        boardPin.getImage_large_url()));
+    }
+
+    @Test
+    public void homeFeedPinsTest() {
+        client.actions().homeFeeds().join().getPins()
+                .forEach(boardPin -> log.info("{} {}", boardPin.getImage_large_url(), boardPin.getType()));
+    }
+
+    @Test
+    public void pinsWithAmountTest() {
+        User user = client.actions().meFollowing().join().getUsers().stream().findFirst().orElseThrow();
+        Board motiv = client.actions().userBoards(user.getId()).join().getBoards().stream()
+                .filter(board -> board.getName().equals("motiv"))
+                .findFirst().orElseThrow();
+        client.actions().boardPinsWithAmount(motiv.getId(), BoardPinsRequest.FeedType.BOARD_IDEAS_FEED, 2)
+                .join().getPins().stream()
+                .filter(boardPin -> boardPin.getType().equals("pin"))
+                .forEach(boardPin -> log.info("{} [{}:{}] {}", boardPin.getId(),
+                        boardPin.getImage_large_size_pixels().getWidth(),
+                        boardPin.getImage_large_size_pixels().getHeight(),
+                        boardPin.getImage_large_url()));
     }
 }

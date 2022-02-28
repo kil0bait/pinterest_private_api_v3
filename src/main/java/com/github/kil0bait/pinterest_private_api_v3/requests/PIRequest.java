@@ -36,9 +36,7 @@ public abstract class PIRequest<T extends PIResponse> {
     }
 
     public String getQueryString(PIClient client) {
-        return mapQueryString("client_id", PIConstants.CLIENT_ID,
-                "timestamp", PIConstants.TIMESTAMP,
-                "oauth_signature", PIConstants.OAUTH_SIGNATURE);
+        return "";
     }
 
     public HttpUrl formUrl(PIClient client) {
