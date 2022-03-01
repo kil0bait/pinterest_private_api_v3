@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class PIClientActions {
     public static final String SELF = "me";
-    private PIClient client;
+    private final PIClient client;
 
     public PIClientActions(PIClient client) {
         this.client = client;
@@ -34,16 +34,30 @@ public class PIClientActions {
     }
 
     public CompletableFuture<BoardPinsResponse> homeFeeds() {
-        return BoardPinsRequest.builder().feedType(BoardPinsRequest.FeedType.HOME_FEED).build().execute(client);
+        return BoardPinsRequest.builder()
+                .feedType(BoardPinsRequest.FeedType.HOME_FEED)
+                .pinsAmount(10)
+                .build()
+                .execute(client);
     }
 
-    public CompletableFuture<BoardPinsResponse> boardPins(String boardId){
-        return BoardPinsRequest.builder().boardId(boardId).feedType(BoardPinsRequest.FeedType.BOARD_PINS).build().execute(client);
+    public CompletableFuture<BoardPinsResponse> boardPins(String boardId) {
+        return BoardPinsRequest.builder()
+                .boardId(boardId)
+                .feedType(BoardPinsRequest.FeedType.BOARD_PINS)
+                .pinsAmount(10)
+                .build().execute(client);
     }
-    public CompletableFuture<BoardPinsResponse> boardIdeasFeedPins(String boardId){
-        return BoardPinsRequest.builder().boardId(boardId).feedType(BoardPinsRequest.FeedType.BOARD_IDEAS_FEED).build().execute(client);
+
+    public CompletableFuture<BoardPinsResponse> boardIdeasFeedPins(String boardId) {
+        return BoardPinsRequest.builder()
+                .boardId(boardId)
+                .feedType(BoardPinsRequest.FeedType.BOARD_IDEAS_FEED)
+                .pinsAmount(10)
+                .build().execute(client);
     }
-    public CompletableFuture<BoardPinsResponse> boardPinsWithAmount(String boardId, BoardPinsRequest.FeedType feedType, int itemCount){
+
+    public CompletableFuture<BoardPinsResponse> boardPinsWithAmount(String boardId, BoardPinsRequest.FeedType feedType, int itemCount) {
         return BoardPinsRequest.builder()
                 .boardId(boardId)
                 .feedType(feedType)
