@@ -1,11 +1,15 @@
 package com.github.kil0bait.pinterest_private_api_v3;
 
-import com.github.kil0bait.pinterest_private_api_v3.requests.boards.BoardPinsRequest;
+import com.github.kil0bait.pinterest_private_api_v3.requests.pins.boards.BoardIdeasPinsRequest;
+import com.github.kil0bait.pinterest_private_api_v3.requests.pins.boards.BoardPinsRequest;
+import com.github.kil0bait.pinterest_private_api_v3.requests.pins.feeds.FeedsHomePinsRequest;
+import com.github.kil0bait.pinterest_private_api_v3.requests.pins.search.SearchPinsRequest;
 import com.github.kil0bait.pinterest_private_api_v3.requests.users.UserBoardRequest;
 import com.github.kil0bait.pinterest_private_api_v3.requests.users.UserFollowingRequest;
-import com.github.kil0bait.pinterest_private_api_v3.responses.boards.BoardPinsResponse;
+import com.github.kil0bait.pinterest_private_api_v3.responses.pins.PinsResponse;
 import com.github.kil0bait.pinterest_private_api_v3.responses.users.UserBoardResponse;
 import com.github.kil0bait.pinterest_private_api_v3.responses.users.UserFollowingResponse;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -33,35 +37,19 @@ public class PIClientActions {
         return new UserBoardRequest(userId).execute(client);
     }
 
-    public CompletableFuture<BoardPinsResponse> homeFeeds() {
-        return BoardPinsRequest.builder()
-                .feedType(BoardPinsRequest.FeedType.HOME_FEED)
-                .pinsAmount(10)
-                .build()
-                .execute(client);
+    public CompletableFuture<PinsResponse> homeFeeds(@Nullable Integer pinsAmount) {
+        return new FeedsHomePinsRequest().pinsAmount(pinsAmount).execute(client);
     }
 
-    public CompletableFuture<BoardPinsResponse> boardPins(String boardId) {
-        return BoardPinsRequest.builder()
-                .boardId(boardId)
-                .feedType(BoardPinsRequest.FeedType.BOARD_PINS)
-                .pinsAmount(10)
-                .build().execute(client);
+    public CompletableFuture<PinsResponse> boardPins(String boardId, @Nullable Integer pinsAmount) {
+        return new BoardPinsRequest(boardId).pinsAmount(pinsAmount).execute(client);
     }
 
-    public CompletableFuture<BoardPinsResponse> boardIdeasFeedPins(String boardId) {
-        return BoardPinsRequest.builder()
-                .boardId(boardId)
-                .feedType(BoardPinsRequest.FeedType.BOARD_IDEAS_FEED)
-                .pinsAmount(10)
-                .build().execute(client);
+    public CompletableFuture<PinsResponse> boardIdeasFeedPins(String boardId, @Nullable Integer pinsAmount) {
+        return new BoardIdeasPinsRequest(boardId).pinsAmount(pinsAmount).execute(client);
     }
 
-    public CompletableFuture<BoardPinsResponse> boardPinsWithAmount(String boardId, BoardPinsRequest.FeedType feedType, int itemCount) {
-        return BoardPinsRequest.builder()
-                .boardId(boardId)
-                .feedType(feedType)
-                .pinsAmount(itemCount)
-                .build().execute(client);
+    public CompletableFuture<PinsResponse> searchPins(String searchQuery, @Nullable Integer pinsAmount) {
+        return new SearchPinsRequest(searchQuery).pinsAmount(pinsAmount).execute(client);
     }
 }

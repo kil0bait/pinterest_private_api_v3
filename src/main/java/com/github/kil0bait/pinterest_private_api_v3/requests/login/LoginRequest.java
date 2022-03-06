@@ -28,10 +28,12 @@ public class LoginRequest extends PIPostRequest<LoginResponse> {
     }
 
     @Override
-    public String getQueryString(PIClient client) {
-        return mapQueryString("client_id", PIConstants.CLIENT_ID,
-                "timestamp", PIConstants.TIMESTAMP,
-                "oauth_signature", PIConstants.OAUTH_SIGNATURE);
+    public QueryParams queryParams(PIClient client) {
+        QueryParams params = super.queryParams(client);
+        params.addParam("client_id", PIConstants.CLIENT_ID);
+        params.addParam("timestamp", PIConstants.TIMESTAMP);
+        params.addParam("oauth_signature", PIConstants.OAUTH_SIGNATURE);
+        return params;
     }
 
     @Override

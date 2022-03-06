@@ -3,7 +3,6 @@ package pinterest_private_api_v3;
 import com.github.kil0bait.pinterest_private_api_v3.PIClient;
 import com.github.kil0bait.pinterest_private_api_v3.models.users.Board;
 import com.github.kil0bait.pinterest_private_api_v3.models.users.User;
-import com.github.kil0bait.pinterest_private_api_v3.requests.boards.BoardPinsRequest;
 import com.github.kil0bait.pinterest_private_api_v3.utils.PIUtils;
 import okhttp3.OkHttpClient;
 import org.junit.AfterClass;
@@ -62,7 +61,7 @@ public class ActionsTest {
         Board motiv = client.actions().userBoards(user.getId()).join().getBoards().stream()
                 .filter(board -> board.getName().equals("motiv"))
                 .findFirst().orElseThrow();
-        client.actions().boardPins(motiv.getId()).join().getPins().stream()
+        client.actions().boardPins(motiv.getId(), null).join().getPins().stream()
                 .filter(boardPin -> boardPin.getType().equals("pin"))
                 .forEach(boardPin -> log.info("{} [{}:{}] {}", boardPin.getId(),
                         boardPin.getImage_large_size_pixels().getWidth(),
@@ -76,7 +75,7 @@ public class ActionsTest {
         Board motiv = client.actions().userBoards(user.getId()).join().getBoards().stream()
                 .filter(board -> board.getName().equals("motiv"))
                 .findFirst().orElseThrow();
-        client.actions().boardIdeasFeedPins(motiv.getId()).join().getPins().stream()
+        client.actions().boardIdeasFeedPins(motiv.getId(), null).join().getPins().stream()
                 .filter(boardPin -> boardPin.getType().equals("pin"))
                 .forEach(boardPin -> log.info("{} [{}:{}] {}", boardPin.getId(),
                         boardPin.getImage_large_size_pixels().getWidth(),
@@ -86,7 +85,7 @@ public class ActionsTest {
 
     @Test
     public void homeFeedPinsTest() {
-        client.actions().homeFeeds().join().getPins()
+        client.actions().homeFeeds(null).join().getPins()
                 .forEach(boardPin -> log.info("{} {}", boardPin.getImage_large_url(), boardPin.getType()));
     }
 
@@ -96,12 +95,18 @@ public class ActionsTest {
         Board motiv = client.actions().userBoards(user.getId()).join().getBoards().stream()
                 .filter(board -> board.getName().equals("motiv"))
                 .findFirst().orElseThrow();
-        client.actions().boardPinsWithAmount(motiv.getId(), BoardPinsRequest.FeedType.BOARD_IDEAS_FEED, 2)
+        client.actions().boardIdeasFeedPins(motiv.getId(), 12)
                 .join().getPins().stream()
                 .filter(boardPin -> boardPin.getType().equals("pin"))
                 .forEach(boardPin -> log.info("{} [{}:{}] {}", boardPin.getId(),
                         boardPin.getImage_large_size_pixels().getWidth(),
                         boardPin.getImage_large_size_pixels().getHeight(),
                         boardPin.getImage_large_url()));
+    }
+
+    @Test
+    public void searchPinsTest() {
+        client.actions().searchPins("memes", null).join().getPins()
+                .forEach(boardPin -> log.info("{} {}", boardPin.getImage_large_url(), boardPin.getType()));
     }
 }

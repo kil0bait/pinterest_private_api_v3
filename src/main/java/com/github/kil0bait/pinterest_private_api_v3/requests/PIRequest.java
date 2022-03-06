@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,31 +37,16 @@ public abstract class PIRequest<T extends PIResponse> {
         return PIConstants.BASE_API_URL;
     }
 
-    public String getQueryString(PIClient client) {
-        return "";
+    public QueryParams queryParams(PIClient client) {
+        return new QueryParams();
     }
 
     public HttpUrl formUrl(PIClient client) {
-        return HttpUrl.parse(baseApiUrl() + apiPath() + path() + getQueryString(client));
+        return HttpUrl.parse(baseApiUrl() + apiPath() + path() + queryParams(client).buildQuery());
     }
 
     public CompletableFuture<T> execute(PIClient client) {
         return client.sendRequest(this);
-    }
-
-    protected String mapQueryString(Object... strings) {
-        StringBuilder builder = new StringBuilder("?");
-
-        for (int i = 0; i < strings.length; i += 2) {
-            if (i + 1 < strings.length && strings[i] != null && strings[i + 1] != null
-                    && !strings[i].toString().isEmpty()
-                    && !strings[i + 1].toString().isEmpty()) {
-                builder.append(URLEncoder.encode(strings[i].toString(), StandardCharsets.UTF_8)).append("=")
-                        .append(URLEncoder.encode(strings[i + 1].toString(), StandardCharsets.UTF_8)).append("&");
-            }
-        }
-
-        return builder.substring(0, builder.length() - 1);
     }
 
     public T parseResponse(Pair<Response, String> response) throws PIResponseException {
@@ -104,6 +91,34 @@ public abstract class PIRequest<T extends PIResponse> {
                 .ifPresent(auth -> req.addHeader("Authorization", auth));
 
         return req;
+    }
+
+    public static String mapQueryString(Object... strings) {
+        StringBuilder builder = new StringBuilder("?");
+
+        for (int i = 0; i < strings.length; i += 2) {
+            if (i + 1 < strings.length && strings[i] != null && strings[i + 1] != null
+                    && !strings[i].toString().isEmpty()
+                    && !strings[i + 1].toString().isEmpty()) {
+                builder.append(URLEncoder.encode(strings[i].toString(), StandardCharsets.UTF_8)).append("=")
+                        .append(URLEncoder.encode(strings[i + 1].toString(), StandardCharsets.UTF_8)).append("&");
+            }
+        }
+
+        return builder.substring(0, builder.length() - 1);
+    }
+
+    public static class QueryParams {
+        private final List<String> params = new ArrayList<>();
+
+        public void addParam(String param, String value) {
+            params.add(param);
+            params.add(value);
+        }
+
+        public String buildQuery() {
+            return mapQueryString(params.toArray());
+        }
     }
 
 }

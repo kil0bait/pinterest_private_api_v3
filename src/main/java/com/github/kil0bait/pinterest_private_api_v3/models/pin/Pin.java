@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 import java.util.Objects;
 
-public class BoardPin {
+public class Pin {
     private String id;
     private String type;
     private String image_large_url;
