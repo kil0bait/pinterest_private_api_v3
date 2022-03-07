@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -111,7 +112,7 @@ public class ActionsTest {
     @Test
     public void searchPinsTest() {
         client.actions().searchPins("memes", null, null).join().getPins()
-                .forEach(boardPin -> log.info("{} {}", boardPin.getImage_large_url(), boardPin.getType()));
+                .forEach(pin -> log.info("{} {}", pin.getImage_large_url(), pin.getType()));
     }
 
     @Test
@@ -138,5 +139,18 @@ public class ActionsTest {
                 noBookmarkPins.size(), ((float) noBookmarkPins.size()) / (pinsAmount * iterations));
         log.info("+  Bookmark : {} pins, {} uniqueness",
                 bookmarkPins.size(), ((float) bookmarkPins.size()) / (pinsAmount * iterations));
+    }
+
+    @Test
+    public void findVideosTest() {
+        PinsResponse response = null;
+        for (int i = 0; i < 5; i++) {
+            response = client.actions().searchPins("tik", 20, response).join();
+            response.getPins().stream()
+                    .filter(pin -> pin.getVideos() != null)
+                    .sorted(Comparator.comparingInt(Pin::getComment_count))
+                    .forEach(pin -> log.info("{} {} {} {}",
+                            pin.getComment_count(), pin.getGrid_title(), pin.getThumbnailUrl(), pin.getVideoUrl()));
+        }
     }
 }

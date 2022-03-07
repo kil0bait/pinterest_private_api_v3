@@ -10,6 +10,9 @@ public class Pin {
     private String type;
     private String image_large_url;
     private PixelSize image_large_size_pixels;
+    private String grid_title;
+    private int comment_count;
+    private Videos videos;
 
     @JsonProperty("images")
     private Map<String, BoardPinVersions> imageVersions;
@@ -30,8 +33,45 @@ public class Pin {
         return image_large_size_pixels;
     }
 
+    public Videos getVideos() {
+        return videos;
+    }
+
+    public String getGrid_title() {
+        return grid_title;
+    }
+
+    public int getComment_count() {
+        return comment_count;
+    }
+
     public Map<String, BoardPinVersions> getImageVersions() {
         return imageVersions;
+    }
+
+    public String getVideoUrl() {
+        if (videos != null && videos.video_list != null && videos.video_list.streamVideo != null)
+            return videos.video_list.streamVideo.url;
+        return null;
+    }
+
+    public String getThumbnailUrl() {
+        if (videos != null && videos.video_list != null && videos.video_list.streamVideo != null)
+            return videos.video_list.streamVideo.thumbnail;
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pin pin = (Pin) o;
+        return id.equals(pin.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public static class BoardPinVersions {
@@ -79,16 +119,5 @@ public class Pin {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Pin pin = (Pin) o;
-        return id.equals(pin.id);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }
