@@ -37,19 +37,26 @@ public class PIClientActions {
         return new UserBoardRequest(userId).execute(client);
     }
 
-    public CompletableFuture<PinsResponse> homeFeeds(@Nullable Integer pinsAmount) {
-        return new FeedsHomePinsRequest().pinsAmount(pinsAmount).execute(client);
+    public CompletableFuture<PinsResponse> homeFeeds(@Nullable Integer pinsAmount,
+                                                     @Nullable PinsResponse previous) {
+        return new FeedsHomePinsRequest().pinsAmount(pinsAmount).previous(previous).execute(client);
     }
 
-    public CompletableFuture<PinsResponse> boardPins(String boardId, @Nullable Integer pinsAmount) {
-        return new BoardPinsRequest(boardId).pinsAmount(pinsAmount).execute(client);
+    public CompletableFuture<PinsResponse> boardPins(String boardId,
+                                                     @Nullable Integer pinsAmount,
+                                                     @Nullable PinsResponse previous) {
+        return new BoardPinsRequest(boardId).pinsAmount(pinsAmount).previous(previous).execute(client);
     }
 
-    public CompletableFuture<PinsResponse> boardIdeasFeedPins(String boardId, @Nullable Integer pinsAmount) {
-        return new BoardIdeasPinsRequest(boardId).pinsAmount(pinsAmount).execute(client);
+    public CompletableFuture<PinsResponse> boardIdeasFeedPins(String boardId,
+                                                              @Nullable Integer pinsAmount,
+                                                              @Nullable PinsResponse previous) {
+        return new BoardIdeasPinsRequest(boardId).pinsAmount(pinsAmount).previous(previous).execute(client);
     }
 
-    public CompletableFuture<PinsResponse> searchPins(String searchQuery, @Nullable Integer pinsAmount) {
-        return new SearchPinsRequest(searchQuery).pinsAmount(pinsAmount).execute(client);
+    public CompletableFuture<PinsResponse> searchPins(String searchQuery,
+                                                      @Nullable Integer pinsAmount,
+                                                      @Nullable PinsResponse previous) {
+        return new SearchPinsRequest(searchQuery).pinsAmount(pinsAmount).previous(previous).execute(client);
     }
 }

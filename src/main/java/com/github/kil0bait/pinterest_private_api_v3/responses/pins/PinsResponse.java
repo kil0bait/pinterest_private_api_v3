@@ -9,8 +9,13 @@ import java.util.List;
 public class PinsResponse extends PIResponse {
     @JsonProperty("data")
     private List<Pin> pins;
+    private String bookmark;
 
     public List<Pin> getPins() {
         return pins;
+    }
+
+    public String getBookmark() {
+        return bookmark;
     }
 }

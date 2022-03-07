@@ -1,8 +1,10 @@
 package pinterest_private_api_v3;
 
 import com.github.kil0bait.pinterest_private_api_v3.PIClient;
+import com.github.kil0bait.pinterest_private_api_v3.models.pin.Pin;
 import com.github.kil0bait.pinterest_private_api_v3.models.users.Board;
 import com.github.kil0bait.pinterest_private_api_v3.models.users.User;
+import com.github.kil0bait.pinterest_private_api_v3.responses.pins.PinsResponse;
 import com.github.kil0bait.pinterest_private_api_v3.utils.PIUtils;
 import okhttp3.OkHttpClient;
 import org.junit.AfterClass;
@@ -14,7 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ActionsTest {
     private static final String PATH = "temp/";
@@ -61,12 +65,12 @@ public class ActionsTest {
         Board motiv = client.actions().userBoards(user.getId()).join().getBoards().stream()
                 .filter(board -> board.getName().equals("motiv"))
                 .findFirst().orElseThrow();
-        client.actions().boardPins(motiv.getId(), null).join().getPins().stream()
-                .filter(boardPin -> boardPin.getType().equals("pin"))
-                .forEach(boardPin -> log.info("{} [{}:{}] {}", boardPin.getId(),
-                        boardPin.getImage_large_size_pixels().getWidth(),
-                        boardPin.getImage_large_size_pixels().getHeight(),
-                        boardPin.getImage_large_url()));
+        client.actions().boardPins(motiv.getId(), null, null).join().getPins().stream()
+                .filter(pin -> pin.getType().equals("pin"))
+                .forEach(pin -> log.info("{} [{}:{}] {}", pin.getId(),
+                        pin.getImage_large_size_pixels().getWidth(),
+                        pin.getImage_large_size_pixels().getHeight(),
+                        pin.getImage_large_url()));
     }
 
     @Test
@@ -75,18 +79,18 @@ public class ActionsTest {
         Board motiv = client.actions().userBoards(user.getId()).join().getBoards().stream()
                 .filter(board -> board.getName().equals("motiv"))
                 .findFirst().orElseThrow();
-        client.actions().boardIdeasFeedPins(motiv.getId(), null).join().getPins().stream()
-                .filter(boardPin -> boardPin.getType().equals("pin"))
-                .forEach(boardPin -> log.info("{} [{}:{}] {}", boardPin.getId(),
-                        boardPin.getImage_large_size_pixels().getWidth(),
-                        boardPin.getImage_large_size_pixels().getHeight(),
-                        boardPin.getImage_large_url()));
+        client.actions().boardIdeasFeedPins(motiv.getId(), null, null).join().getPins().stream()
+                .filter(pin -> pin.getType().equals("pin"))
+                .forEach(pin -> log.info("{} [{}:{}] {}", pin.getId(),
+                        pin.getImage_large_size_pixels().getWidth(),
+                        pin.getImage_large_size_pixels().getHeight(),
+                        pin.getImage_large_url()));
     }
 
     @Test
     public void homeFeedPinsTest() {
-        client.actions().homeFeeds(null).join().getPins()
-                .forEach(boardPin -> log.info("{} {}", boardPin.getImage_large_url(), boardPin.getType()));
+        client.actions().homeFeeds(null, null).join().getPins()
+                .forEach(pin -> log.info("{} {}", pin.getImage_large_url(), pin.getType()));
     }
 
     @Test
@@ -95,18 +99,44 @@ public class ActionsTest {
         Board motiv = client.actions().userBoards(user.getId()).join().getBoards().stream()
                 .filter(board -> board.getName().equals("motiv"))
                 .findFirst().orElseThrow();
-        client.actions().boardIdeasFeedPins(motiv.getId(), 12)
+        client.actions().boardIdeasFeedPins(motiv.getId(), 12, null)
                 .join().getPins().stream()
-                .filter(boardPin -> boardPin.getType().equals("pin"))
-                .forEach(boardPin -> log.info("{} [{}:{}] {}", boardPin.getId(),
-                        boardPin.getImage_large_size_pixels().getWidth(),
-                        boardPin.getImage_large_size_pixels().getHeight(),
-                        boardPin.getImage_large_url()));
+                .filter(pin -> pin.getType().equals("pin"))
+                .forEach(pin -> log.info("{} [{}:{}] {}", pin.getId(),
+                        pin.getImage_large_size_pixels().getWidth(),
+                        pin.getImage_large_size_pixels().getHeight(),
+                        pin.getImage_large_url()));
     }
 
     @Test
     public void searchPinsTest() {
-        client.actions().searchPins("memes", null).join().getPins()
+        client.actions().searchPins("memes", null, null).join().getPins()
                 .forEach(boardPin -> log.info("{} {}", boardPin.getImage_large_url(), boardPin.getType()));
+    }
+
+    @Test
+    public void pinsUniquenessTest() {
+        int pinsAmount = 10;
+        int iterations = 5;
+        Set<Pin> noBookmarkPins = new HashSet<>();
+        for (int i = 0; i < iterations; i++)
+            client.actions().boardIdeasFeedPins("729090695863834997", pinsAmount, null).join().getPins()
+                    .forEach(pin -> {
+                        log.info("{} {}", pin.getImage_large_url(), pin.getType());
+                        noBookmarkPins.add(pin);
+                    });
+        Set<Pin> bookmarkPins = new HashSet<>();
+        PinsResponse response = null;
+        for (int i = 0; i < iterations; i++) {
+            response = client.actions().boardIdeasFeedPins("729090695863834997", pinsAmount, response).join();
+            response.getPins().forEach(pin -> {
+                log.info("{} {}", pin.getImage_large_url(), pin.getType());
+                bookmarkPins.add(pin);
+            });
+        }
+        log.info("No Bookmark : {} pins, {} uniqueness",
+                noBookmarkPins.size(), ((float) noBookmarkPins.size()) / (pinsAmount * iterations));
+        log.info("+  Bookmark : {} pins, {} uniqueness",
+                bookmarkPins.size(), ((float) bookmarkPins.size()) / (pinsAmount * iterations));
     }
 }
