@@ -9,10 +9,6 @@ public class SearchPinsRequest extends AbstractPinsRequest {
 
     public SearchPinsRequest(String searchQuery) {
         this.searchQuery = searchQuery;
-        addFields("pin.videos()",
-                "video.video_list[V_HLSV4]",
-                "video.duration",
-                "video.id");
     }
 
     @Override

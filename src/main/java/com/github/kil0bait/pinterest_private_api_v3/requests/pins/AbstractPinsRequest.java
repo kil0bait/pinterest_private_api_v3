@@ -16,9 +16,17 @@ public abstract class AbstractPinsRequest extends PIGetRequest<PinsResponse> {
     public AbstractPinsRequest() {
         addFields("pin.id",
                 "pin.type",
-                "pin.image_large_url",
                 "pin.grid_title",
-                "pin.comment_count"
+                "pin.image_large_url",
+                "pin.image_large_size_pixels",
+                "pin.comment_count",
+                "pin.repin_count",
+                "pin.like_count",
+                "pin.dominant_color",
+                "pin.videos()",
+                "video.video_list[V_HLSV4]",
+                "video.duration",
+                "video.id"
         );
     }
 

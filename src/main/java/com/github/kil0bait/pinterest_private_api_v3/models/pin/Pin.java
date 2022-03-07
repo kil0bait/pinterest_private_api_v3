@@ -7,10 +7,13 @@ import java.util.Objects;
 
 public class Pin {
     private String id;
+    private String grid_title;
     private String type;
     private String image_large_url;
     private PixelSize image_large_size_pixels;
-    private String grid_title;
+    private String dominant_color;
+    private int like_count;
+    private int repin_count;
     private int comment_count;
     private Videos videos;
 
@@ -19,6 +22,10 @@ public class Pin {
 
     public String getId() {
         return id;
+    }
+
+    public String getGrid_title() {
+        return grid_title;
     }
 
     public String getType() {
@@ -33,16 +40,24 @@ public class Pin {
         return image_large_size_pixels;
     }
 
-    public Videos getVideos() {
-        return videos;
+    public String getDominant_color() {
+        return dominant_color;
     }
 
-    public String getGrid_title() {
-        return grid_title;
+    public int getLike_count() {
+        return like_count;
+    }
+
+    public int getRepin_count() {
+        return repin_count;
     }
 
     public int getComment_count() {
         return comment_count;
+    }
+
+    public Videos getVideos() {
+        return videos;
     }
 
     public Map<String, BoardPinVersions> getImageVersions() {

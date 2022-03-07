@@ -111,8 +111,8 @@ public class ActionsTest {
 
     @Test
     public void searchPinsTest() {
-        client.actions().searchPins("memes", null, null).join().getPins()
-                .forEach(pin -> log.info("{} {}", pin.getImage_large_url(), pin.getType()));
+        client.actions().searchPins("memes videos", null, null).join().getPins()
+                .forEach(pin -> log.info("{} {} {} {}", pin.getRepin_count(), pin.getLike_count(), pin.getImage_large_url(), pin.getVideoUrl()));
     }
 
     @Test
