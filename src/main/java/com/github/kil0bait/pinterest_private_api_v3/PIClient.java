@@ -33,7 +33,7 @@ public class PIClient implements Serializable {
     private PIDevice device = PIDevice.DEVICES[0];
 
     private transient OkHttpClient httpClient;
-    private transient PIClientActions actions = new PIClientActions(this);
+    private transient PIClientActions actions;
 
     public PIClient(String username, String password) {
         this(username, password, PIUtils.defaultHttpClientBuilder().build());
@@ -43,6 +43,11 @@ public class PIClient implements Serializable {
         this.username = username;
         this.password = password;
         this.httpClient = client;
+        initializeDefaults();
+    }
+
+    private void initializeDefaults() {
+        actions = new PIClientActions(this);
     }
 
     public CompletableFuture<LoginResponse> sendLoginRequest() {
@@ -137,6 +142,7 @@ public class PIClient implements Serializable {
 
     @Serial
     private Object readResolve() throws ObjectStreamException {
+        this.initializeDefaults();
         if (loggedIn)
             log.info("Successfully deserialized {}", username);
         return this;
@@ -144,6 +150,11 @@ public class PIClient implements Serializable {
 
     public OkHttpClient getHttpClient() {
         return httpClient;
+    }
+
+    public PIClient setHttpClient(OkHttpClient httpClient) {
+        this.httpClient = httpClient;
+        return this;
     }
 
     public boolean isLoggedIn() {
