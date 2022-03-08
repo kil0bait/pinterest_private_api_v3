@@ -4,10 +4,15 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PIBaseModel {
+public class PIBaseModel implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -8036294393830430410L;
+
     @JsonAnySetter
     private Map<String, Object> extra_properties = new HashMap<>();
 

@@ -2,10 +2,15 @@ package com.github.kil0bait.pinterest_private_api_v3.models.pin;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
-public class Pin {
+public class Pin implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 525135245283930873L;
+
     private String id;
     private String grid_title;
     private String type;
@@ -89,7 +94,10 @@ public class Pin {
         return Objects.hash(id);
     }
 
-    public static class BoardPinVersions {
+    public static class BoardPinVersions implements Serializable{
+        @Serial
+        private static final long serialVersionUID = 6595753658594682787L;
+
         private int width;
         private int height;
         private String url;
@@ -121,7 +129,10 @@ public class Pin {
         }
     }
 
-    public static class PixelSize {
+    public static class PixelSize implements Serializable{
+        @Serial
+        private static final long serialVersionUID = -5401690250774957422L;
+
         private int width;
         private int height;
 

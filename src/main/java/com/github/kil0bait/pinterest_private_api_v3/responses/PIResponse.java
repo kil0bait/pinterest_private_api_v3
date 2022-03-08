@@ -3,7 +3,13 @@ package com.github.kil0bait.pinterest_private_api_v3.responses;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.kil0bait.pinterest_private_api_v3.models.PIBaseModel;
 
-public class PIResponse extends PIBaseModel {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class PIResponse extends PIBaseModel implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 2612371600067807142L;
+
     private String status;
     private int code;
     @JsonIgnore
