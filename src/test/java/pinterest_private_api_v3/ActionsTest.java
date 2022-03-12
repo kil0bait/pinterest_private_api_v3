@@ -149,8 +149,8 @@ public class ActionsTest {
             response.getPins().stream()
                     .filter(pin -> pin.getVideos() != null)
                     .sorted(Comparator.comparingInt(Pin::getComment_count))
-                    .forEach(pin -> log.info("{} {} {} {}",
-                            pin.getComment_count(), pin.getGrid_title(), pin.getThumbnailUrl(), pin.getVideoUrl()));
+                    .forEach(pin -> log.info("{} {} [{}:{}] {} {}", pin.getComment_count(), pin.getGrid_title(),
+                            pin.getVideoWidth(), pin.getVideoHeight(), pin.getThumbnailUrl(), pin.getVideoUrl()));
         }
     }
 }

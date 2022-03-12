@@ -81,6 +81,18 @@ public class Pin implements Serializable {
         return null;
     }
 
+    public Integer getVideoWidth() {
+        if (videos != null && videos.video_list != null && videos.video_list.streamVideo != null)
+            return videos.video_list.streamVideo.width;
+        return null;
+    }
+
+    public Integer getVideoHeight() {
+        if (videos != null && videos.video_list != null && videos.video_list.streamVideo != null)
+            return videos.video_list.streamVideo.height;
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

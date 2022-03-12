@@ -13,4 +13,8 @@ public class StreamVideo implements Serializable {
     String url;
     @JsonProperty("thumbnail")
     String thumbnail;
+    @JsonProperty("width")
+    int width;
+    @JsonProperty("height")
+    int height;
 }
